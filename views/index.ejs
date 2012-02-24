@@ -1,0 +1,15 @@
+<h1><%= title %></h1>
+<p>Welcome to <%= title %></p>
+<form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+	<input type="file" name="upload">
+	<input type="submit" value="Upload">
+</form>
+<script src="/js/libs/zepto.js"></script>
+<script src="/js/upload-1.js"></script>
+<script>
+$(document).ready(function(){
+
+	var uploader = new Uploader('upload-form');
+	console.log(uploader);
+});
+</script>
