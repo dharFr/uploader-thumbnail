@@ -6,3 +6,23 @@ body {
 a {
   color: #00B7FF;
 }
+
+figure {
+    float: left;
+    font-size: 0.8em;
+    margin: 0.5em 3em;
+    text-align: center;
+    width: auto;
+}
+figure.empty {
+	height: 67px;
+    padding-top: 3px;
+    width: 70px;
+    background: lightgrey;
+}
+figure.empty span {
+
+    font-size: 4.3em;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+}

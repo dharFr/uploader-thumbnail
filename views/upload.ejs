@@ -1,2 +1,15 @@
 <h1><%= title %></h1>
-<p><%= content %></p>
+<p>Welcome to <%= title %></p>
+
+<figure id="thumbnail">  
+	<a href="/uploads/<%= file %>">
+		<img src="/thumb/<%= file %>" alt="File '<%= file %>'">  
+		<figcaption>File '<%= file %>'</figcaption>
+	</a>
+</figure> 
+
+<form action="/remove" method="post">
+	<input type="hidden" name="file" value="<%= file %>">
+	<label for="remove">Don't like it?</label><br/>
+	<input type="submit" id="remove" value="Remove File">
+</form>

@@ -13,7 +13,9 @@ var app = module.exports = express.createServer();
 app.configure(function(){
   app.set('views', __dirname + '/views');
   app.set('view engine', 'ejs');
-  app.use(express.bodyParser());
+  app.use(express.bodyParser({
+  	uploadDir:__dirname +'/public/uploads'
+  }));
   app.use(express.methodOverride());
   app.use(app.router);
   app.use(express.static(__dirname + '/public'));
@@ -30,7 +32,9 @@ app.configure('production', function(){
 // Routes
 
 app.get('/', routes.index);
-app.post('/upload', routes.upload);
+app.post('/', routes.upload);
+app.get('/thumb/:file', routes.thumb);
+app.post('/remove', routes.remove);
 
 app.listen(3000);
 console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);
