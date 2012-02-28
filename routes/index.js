@@ -106,7 +106,7 @@ exports.remove = function(req, res, next) {
 		var dstPath = path.join(dstDir, file);
 		var thumbPath = path.join(dstDir, '/thumb-'+file);
 
-		console.log('removinf on:', file);
+		console.log('removing', file);
 		// remove img file
 		fs.unlink(dstPath);
 		// remove already existing thumbnail

@@ -1,8 +1,7 @@
 <h1><%= title %></h1>
 <p>Welcome to <%= title %></p>
 
-<figure id="thumbnail" class="empty">
-	<span>[?]</span>
+<figure id="thumbnail" class="empty" data-plugin-options='{"fileId":"12345"}'>
 </figure> 
 
 <form id="upload-form" action="" method="post" enctype="multipart/form-data">
@@ -16,13 +15,56 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
 <script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.7.1.min.js"%3E%3C/script%3E'))</script>
 
+<script>
+;(function($) {
+	/*
+	 * jQuery Observer pattern 
+	 * inspired by @addyosmani
+	 * see: http://addyosmani.com/resources/essentialjsdesignpatterns/book/#highlighter_506612
+	 */
+	var topics = [];
+	function getTopic(id) {
+		var callbacks;
+		topic = id && topics[id];
+		if (!topic) {
+			callbacks = $.Callbacks();
+			topic = {
+				publish: callbacks.fire,
+				subscribe: callbacks.add,
+				unsubscribe: callbacks.remove
+			};
+			if (id) topics[id] = topic;
+		}
+		return topic;
+	}
+	$.observer = {
+		publish: function(id) {
+		var args = (2 <= arguments.length) ? Array.prototype.slice.call(arguments, 1) : [];
+		var t = getTopic(id);
+		return t.publish.apply(t, args);
+		},
+		subscribe: function(id, fn) {
+			return getTopic(id).subscribe(fn);
+		},
+		unsubscribe: function(id, fn) {
+			return getTopic(id).unsubscribe(fn);
+		}
+	};
+})(jQuery);
+</script>
 <!-- Uploader script-->
-<script src="/js/upload-1.js"></script>
+<script src="/js/jquery.uploader.js"></script>
+<script src="/js/jquery.thumbnail.js"></script>
 <script>
 $(document).ready(function(){
 
+
 	$('#upload-form').uploader({
-		removeUrl: '/remove'
+		removeUrl: '/remove',
+		observer: $.observer
+	});
+	$('#thumbnail').thumbnail({
+		observer: $.observer
 	});
 });
 </script>

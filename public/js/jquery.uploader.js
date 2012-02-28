@@ -1,15 +1,3 @@
-
-/*
- * 'Highly configurable' mutable plugin boilerplate
- * Author: @markdalgleish
- * Further changes, comments: @addyosmani
- * Licensed under the MIT license
- */
-
-
-// Note that with this pattern, as per Alex Sexton's, the plugin logic
-// hasn't been nested in a jQuery plugin. Instead, we just use
-// jQuery for its instantiation.
 ;(function( $, window, document, undefined ){
 
 	// our plugin constructor
@@ -18,19 +6,23 @@
 		this.$form = $(form);
 		this.$upload = $('input[type="file"]', this.form);
 
+		this.obs = options.observer || {publish:function(){}, subscribe:function(){}};
+
 		this.options = options;
 
 		// This next line takes advantage of HTML5 data attributes
 		// to support customization of the plugin on a per-element
 		// basis. For example,
-		// <div class=item' data-plugin-options='{"message":"Goodbye World!"}'></div>
+		// <form data-plugin-options='{"message":"Goodbye World!"}'></form>
 		this.metadata = this.$form.data( 'plugin-options' );
 
 
+		this.fileId = $('input[name="fileId"]').val() || this.metadata.fileId
+
 		this.$remove = null;		// the remove UI that will be generated after uploading
-		this.$fContent = null; 	// form content wrapped into this element
-		this.id = null; 				// random id generated to identify iframe and callback
-		this.data = null;				// file data returned by file upload
+		this.$fContent = null; 		// form content wrapped into this element
+		this.id = null; 			// random id generated to identify iframe and callback
+		this.data = null;			// file data returned by file upload
 	};
 
 	// the uploader prototype
@@ -47,16 +39,17 @@
 
 			// Sample usage:
 			// Set the message per instance:
-			// $('#elem').uploader({ message: 'Goodbye World!'});
+			// $('#elem').uploader({ removeLabel: 'Delete File'});
 			// or
 			// var p = new Uploader(document.getElementById('elem'), 
-			// { message: 'Goodbye World!'}).init()
+			// { removeLabel: 'Delete File'}).init()
 			// or, set the global default message:
-			// Uploader.defaults.message = 'Goodbye World!'
+			// Uploader.defaults.removeLabel = 'Delete File'
 
 			this.hideSubmitBtn();
 			this.wrapFormContent();
 			this.iframeUpload();
+
 			return this;
 		},
 
@@ -78,7 +71,7 @@
 			}
 		},
 
-		displayRemoveButton: function() {
+		showRemoveButton: function() {
 
 			// Hide form content
 			this.$fContent.hide();
@@ -97,6 +90,11 @@
 			this.$form.append(this.$remove);
 		},
 
+		hideRemoveButton: function() {
+			this.$remove.detach();
+			this.$fContent.show();
+		},
+
 		deleteFile: function() {
 			console.log('ask for delete');
 			var jqXhr = $.post(this.config.removeUrl, {
@@ -108,9 +106,11 @@
 					console.log('delete file error:', arguments);
 				})
 				.done($.proxy(function(){
-					console.log('deleted file:', arguments);
-					this.$remove.detach();
-					this.$fContent.show();
+					this.hideRemoveButton();
+					this.data = null;
+
+					// Notify Observer
+					this.obs.publish('removed.uploader', this.fileId);
 				}, this));
 		},
 
@@ -151,8 +151,15 @@
 					this.$form.attr('action', url);
 					window[cb] = undefined;
 
-					this.displayRemoveButton();
+					this.showRemoveButton();
+
+					// Notify Observer
+					this.obs.publish('uploaded.uploader', this.fileId, this.data);
+
 				}, this);
+
+				// Notify Observer
+				this.obs.publish('submit.uploader', this.fileId);
 
 			}, this));
 		}
