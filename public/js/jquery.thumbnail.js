@@ -38,37 +38,60 @@
 			// Thumbnail.defaults.message = 'Goodbye World!'
 
 			// Observe uploader events
-			this.obs.subscribe('submit.uploader', 	$.proxy(this.loading, this));
-			this.obs.subscribe('uploaded.uploader',	$.proxy(this.setImage, this));
-			this.obs.subscribe('removed.uploader',	$.proxy(this.empty, this));
+			this.obs.subscribe('submit.uploader', 	$.proxy(this.onUploadStart, this));
+			this.obs.subscribe('uploaded.uploader',	$.proxy(this.onUploadDone, this));
+			this.obs.subscribe('removed.uploader',	$.proxy(this.onRemove, this));
 
 			return this;
 		},
 
-		loading: function(fileId) {
-
-			console.log('loading:', arguments);
+		onUploadStart: function(fileId, file) {
 
 			if (fileId === this.fileId) {
-				this.$elem.removeClass('empty').addClass('loading');	
+
+				this.$elem.removeClass('empty').addClass('loading');
+
+				// If FileReader is supported, display a thumbnail preview
+				if (file && window.FileReader) {
+
+					var reader = new FileReader();
+					reader.onloadend = $.proxy(function (e) {
+						$('<a href="' + e.target.result + '">' +
+							'<img src="' + e.target.result + '">' +
+						'</a>').appendTo(this.$elem);
+					}, this);
+					reader.readAsDataURL(file);
+				}
 			}
 		},
 
-		setImage: function(fileId, data) {
-			console.log('setImage:', arguments);
+		onUploadDone: function(fileId, data) {
 
 			if (fileId === this.fileId) {
 
 				this.$elem.removeClass('loading empty');
 
-				$('<a href="/uploads/' + data.file + '">' +
-					'<img src="/thumb/' + data.file + '" alt="File ' + data.file +'">' + 
-					'<figcaption>File ' + data.file +'</figcaption>' +
-				'</a>').appendTo(this.$elem);
+				// If FileReader is supported, thumbnail is already displayed
+				if (window.FileReader) {
+
+					var link = $('a', this.$elem);
+					// Add alt an figcaption
+					$('img', this.$elem).attr('alt', 'File ' + data.file);
+					$('<figcaption>File ' + data.file +'</figcaption>').appendTo(link);
+
+					// Replace link with final url
+					link.attr('href', '/uploads/' + data.file);
+
+				} else {
+					$('<a href="/uploads/' + data.file + '">' +
+						'<img src="/thumb/' + data.file + '" alt="File ' + data.file +'">' + 
+						'<figcaption>File ' + data.file +'</figcaption>' +
+					'</a>').appendTo(this.$elem);	
+				}
 			}
 		},
 
-		empty: function(fileId) {
+		onRemove: function(fileId) {
 			console.log('empty:', arguments);
 
 			if (fileId === this.fileId) {

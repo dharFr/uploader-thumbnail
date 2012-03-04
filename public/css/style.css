@@ -7,12 +7,20 @@ a {
   color: #00B7FF;
 }
 
+form {
+  background-color: #eee;
+  min-height: 81px;
+}
+
 figure {
     float: left;
     font-size: 0.8em;
     margin: 0.5em 3em;
     text-align: center;
     width: auto;
+}
+figure img {
+  width: 70px;
 }
 figure.empty {
 	height: 67px;

@@ -12,7 +12,7 @@ exports.index = function(req, res){
 
 exports.upload = function(req, res) {
 
-	moveFile = function(name, tmpPath, id) {
+	var moveFile = function(name, tmpPath, id) {
 
 		var dstDir = path.normalize( __dirname + '/../public/uploads' );
 		var ext = path.extname(name);
@@ -46,7 +46,14 @@ exports.upload = function(req, res) {
 	log = format('\nuploaded %s (%d Kb, %s) to %s', result.name, result.size, result.type , imgPath);
 	console.log(log);
 
-	if(req.query.iframe){
+
+	if (req.xhr) {
+
+		// uncomment the following line to simulate network latency for localhost testing
+		//setTimeout(function(){ res.json(result); }, 3000);
+		res.json(result);
+
+	} else if(req.query.iframe){
 
 		res.render('upload-iframe', {
 			layout: false,
