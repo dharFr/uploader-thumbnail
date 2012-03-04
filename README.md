@@ -7,8 +7,10 @@ Old browsers are supported via iframe fallback.
 
 Still in construction...
 
+___________________________
 References:
-https://developer.mozilla.org/en/Using_files_from_web_applications
-https://developer.mozilla.org/en/DOM/XMLHttpRequest/Using_XMLHttpRequest#Using_FormData_objects
-https://developer.mozilla.org/en/DOM/FileReader
-http://net.tutsplus.com/tutorials/javascript-ajax/uploading-files-with-ajax/
+
+ * https://developer.mozilla.org/en/Using_files_from_web_applications
+ * https://developer.mozilla.org/en/DOM/XMLHttpRequest/Using_XMLHttpRequest#Using_FormData_objects
+ * https://developer.mozilla.org/en/DOM/FileReader
+ * http://net.tutsplus.com/tutorials/javascript-ajax/uploading-files-with-ajax/
