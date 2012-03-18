@@ -15,36 +15,25 @@
 		<input type="file" name="upload" id="upload" accept="image/*">
 		<input type="submit" value="Upload">
 	</form>
+
+	<div id="messages" style="display:none;"></div>
+
+	<form id="remove-form" action="/remove" method="post" style="display:none;">
+		<input type="hidden" name="file" value="12345">
+		<label for="remove">Don't like it?</label><br/>
+		<input type="submit" id="remove" value="Remove File">
+	</form>
 </div>
 
 
-<!-- Step 1 : iframe Upload -->
-<!--script src="/js/libs/jquery-1.7.1.min.js"></script>
-<script src="/js/step1/upload.js"></script>
+<script src="/js/libs/jquery-1.7.1.min.js"></script>
+<script src="/js/libs/jquery.observer.js"></script>
+<script src="/js/upload.js"></script>
+<script src="/js/thumbnail.js"></script>
+<script src="/js/remover.js"></script>
+
 <script>
 $(function(){
-	$('#upload-form').uploader();
-});
-</script-->
-
-<!-- Step 2 : FormData upload -->
-<!-- script src="/js/step2/upload.js"></script-->
-
-<!-- Step 3 : Add Observer, Thumbnail Module & Remove Module -->
-<!--div id="messages" style="display:none;"></div>
-<form id="remove-form" action="/remove" method="post" style="display:none;">
-	<input type="hidden" name="file" value="12345">
-	<label for="remove">Don't like it?</label><br/>
-	<input type="submit" id="remove" value="Remove File">
-</form>
-</div>
-<script src="/js/libs/jquery.observer.js"></script>
-<script src="/js/step3/upload.js"></script>
-<script src="/js/step3/thumbnail.js"></script>
-<script src="/js/step3/remover.js"></script>
-
-<script>
-$(document).ready(function(){
 
 	var options, uploader, remover, thumbnail, messages;
 
@@ -63,6 +52,16 @@ $(document).ready(function(){
 	uploader 	= $('#upload-form').uploader(options);
 	remover		= $('#remove-form').remover(options);
 	thumbnail 	= $('#thumbnail').thumbnail(options);
+
+	// Handle Drag'n'drop 
+	if (supportDragAndDrop()) {
+
+		$('#content')
+			.on('dragenter',	onDragEnter)
+			.on('dragleave',	onDragLeave)
+			.on('drop',			onDropFile)
+			.on('dragover',		onDragOver);
+	}
 
 	function onUploadStart() {
 		showMessage('Upload in Progress...');
@@ -93,23 +92,7 @@ $(document).ready(function(){
 		if (!messages) messages = $('#messages');
 		messages.text('').hide();
 	}
-</script-->
 
-
-<!-- Step 4 : Add Drag'n'Drop -->
-<!--script src="/js/step4/upload.js"></script>
-<script src="/js/step4/thumbnail.js"></script>
-<script src="/js/step4/remover.js"></script>
-<script>
-	// 
-	if (supportDragAndDrop()) {
-
-		$('#content')
-			.on('dragenter',	onDragEnter)
-			.on('dragleave',	onDragLeave)
-			.on('drop',			onDropFile)
-			.on('dragover',		onDragOver);
-	}
 	// Test from Modernizr: 
 	// https://github.com/Modernizr/Modernizr/blob/master/modernizr.js#L528-531
 	function supportDragAndDrop() {
@@ -138,7 +121,7 @@ $(document).ready(function(){
 	}
 
 	function onDropFile(e) {
-		// prevent default behaviour
+
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -146,4 +129,4 @@ $(document).ready(function(){
 		return false;
 	}
 });
-</script--> 
+</script>
