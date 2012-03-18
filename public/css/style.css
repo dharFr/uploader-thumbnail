@@ -7,30 +7,33 @@ a {
   color: #00B7FF;
 }
 
-form {
+form,
+#messages {
   background-color: #eee;
-  min-height: 81px;
+  min-height: 100px;
 }
 
 figure {
-    float: left;
-    font-size: 0.8em;
-    margin: 0.5em 3em;
-    text-align: center;
-    width: auto;
+  float: left;
+  font-size: 0.8em;
+  margin: 0.5em 3em;
+  text-align: center;
+  height: 67px;
+  width: 70px;
 }
 figure img {
   width: 70px;
 }
 figure.empty {
-	height: 67px;
-    padding-top: 3px;
-    width: 70px;
-    background: lightgrey;
+  padding-top: 3px;
+  background: lightgrey;
+}
+figure.loading {
+  background: orange;
 }
 figure.empty span {
 
-    font-size: 4.3em;
-    font-weight: bold;
-    letter-spacing: 0.1em;
+  font-size: 4.3em;
+  font-weight: bold;
+  letter-spacing: 0.1em;
 }

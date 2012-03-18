@@ -1,70 +1,149 @@
-<h1><%= title %></h1>
-<p>Welcome to <%= title %></p>
 
-<figure id="thumbnail" class="empty" data-plugin-options='{"fileId":"12345"}'>
-</figure> 
 
-<form id="upload-form" action="" method="post" enctype="multipart/form-data">
-	<input type="hidden" name="fileId" value="12345">
-	<label for="upload">Go Upload Something</label><br>
-	<input type="file" name="upload" id="upload" accept="image/*">
-	<input type="submit" value="Upload">
-</form>
 
-<!-- Grab Google CDN's jQuery. fall back to local if necessary -->
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-<script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.7.1.min.js"%3E%3C/script%3E'))</script>
+<h1>Uploader demo</h1>
+<p>Welcome to JSSophia</p>
 
+<!-- Initial code: Pure HTML / No JS -->
+<div id="content">
+	<figure id="thumbnail" class="empty" data-plugin-options='{"fileId":"12345"}'></figure> 
+	<form id="upload-form" action="" method="post" enctype="multipart/form-data">
+		
+		<label for="upload">Go Upload Something</label><br>
+
+		<input type="hidden" name="fileId" value="12345">
+		<input type="file" name="upload" id="upload" accept="image/*">
+		<input type="submit" value="Upload">
+	</form>
+</div>
+
+
+<!-- Step 1 : iframe Upload -->
+<!--script src="/js/libs/jquery-1.7.1.min.js"></script>
+<script src="/js/step1/upload.js"></script>
 <script>
-;(function($) {
-	/*
-	 * jQuery Observer pattern 
-	 * inspired by @addyosmani
-	 * see: http://addyosmani.com/resources/essentialjsdesignpatterns/book/#highlighter_506612
-	 */
-	var topics = [];
-	function getTopic(id) {
-		var callbacks;
-		topic = id && topics[id];
-		if (!topic) {
-			callbacks = $.Callbacks();
-			topic = {
-				publish: callbacks.fire,
-				subscribe: callbacks.add,
-				unsubscribe: callbacks.remove
-			};
-			if (id) topics[id] = topic;
-		}
-		return topic;
-	}
-	$.observer = {
-		publish: function(id) {
-		var args = (2 <= arguments.length) ? Array.prototype.slice.call(arguments, 1) : [];
-		var t = getTopic(id);
-		return t.publish.apply(t, args);
-		},
-		subscribe: function(id, fn) {
-			return getTopic(id).subscribe(fn);
-		},
-		unsubscribe: function(id, fn) {
-			return getTopic(id).unsubscribe(fn);
-		}
-	};
-})(jQuery);
-</script>
-<!-- Uploader script-->
-<script src="/js/jquery.uploader.js"></script>
-<script src="/js/jquery.thumbnail.js"></script>
+$(function(){
+	$('#upload-form').uploader();
+});
+</script-->
+
+<!-- Step 2 : FormData upload -->
+<!-- script src="/js/step2/upload.js"></script-->
+
+<!-- Step 3 : Add Observer, Thumbnail Module & Remove Module -->
+<!--div id="messages" style="display:none;"></div>
+<form id="remove-form" action="/remove" method="post" style="display:none;">
+	<input type="hidden" name="file" value="12345">
+	<label for="remove">Don't like it?</label><br/>
+	<input type="submit" id="remove" value="Remove File">
+</form>
+</div>
+<script src="/js/libs/jquery.observer.js"></script>
+<script src="/js/step3/upload.js"></script>
+<script src="/js/step3/thumbnail.js"></script>
+<script src="/js/step3/remover.js"></script>
+
 <script>
 $(document).ready(function(){
 
+	var options, uploader, remover, thumbnail, messages;
 
-	$('#upload-form').uploader({
-		removeUrl: '/remove',
+	options = {
 		observer: $.observer
-	});
-	$('#thumbnail').thumbnail({
-		observer: $.observer
-	});
+	};
+
+	// Observe event and define behaviour
+	$.observer.subscribe('submit.uploader', 	onUploadStart );
+	$.observer.subscribe('uploaded.uploader',	onUploadDone );
+	$.observer.subscribe('removing.remover', 	onDeleteStart );
+	$.observer.subscribe('removed.remover',		onDeleteDone );
+
+
+	// Initialize modules
+	uploader 	= $('#upload-form').uploader(options);
+	remover		= $('#remove-form').remover(options);
+	thumbnail 	= $('#thumbnail').thumbnail(options);
+
+	function onUploadStart() {
+		showMessage('Upload in Progress...');
+		uploader.hide();
+	}
+
+	function onUploadDone() {
+		hideMessage();
+		remover.show();
+	}
+
+	function onDeleteStart() {
+		remover.hide();
+		showMessage('Removing file...');
+	}
+
+	function onDeleteDone() {
+		hideMessage();
+		uploader.show();
+	}
+
+	function showMessage(msg) {
+		if (!messages) messages = $('#messages');
+		messages.text(msg).show();
+	}
+
+	function hideMessage(){
+		if (!messages) messages = $('#messages');
+		messages.text('').hide();
+	}
+</script-->
+
+
+<!-- Step 4 : Add Drag'n'Drop -->
+<!--script src="/js/step4/upload.js"></script>
+<script src="/js/step4/thumbnail.js"></script>
+<script src="/js/step4/remover.js"></script>
+<script>
+	// 
+	if (supportDragAndDrop()) {
+
+		$('#content')
+			.on('dragenter',	onDragEnter)
+			.on('dragleave',	onDragLeave)
+			.on('drop',			onDropFile)
+			.on('dragover',		onDragOver);
+	}
+	// Test from Modernizr: 
+	// https://github.com/Modernizr/Modernizr/blob/master/modernizr.js#L528-531
+	function supportDragAndDrop() {
+
+        var div = document.createElement('div');
+        return ('draggable' in div) || ('ondragstart' in div && 'ondrop' in div);    
+	}
+
+	// prevent default behaviour
+	function onDragEnter (e){ 
+
+		showMessage('Drop here');
+		uploader.hide();
+		return false;
+	}
+	function onDragLeave (e){ 
+		hideMessage();
+		uploader.show();
+		return false;
+	}
+	function onDragOver (e){ 
+
+		showMessage('Drop here');
+		uploader.hide();
+		return false; 
+	}
+
+	function onDropFile(e) {
+		// prevent default behaviour
+		e.preventDefault();
+		e.stopPropagation();
+
+		$.observer.publish('drop', e);
+		return false;
+	}
 });
-</script>
+</script--> 

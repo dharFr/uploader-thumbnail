@@ -7,7 +7,7 @@
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Uploader' })
+  res.render('index', {})
 };
 
 exports.upload = function(req, res) {
@@ -46,29 +46,29 @@ exports.upload = function(req, res) {
 	log = format('\nuploaded %s (%d Kb, %s) to %s', result.name, result.size, result.type , imgPath);
 	console.log(log);
 
+	setTimeout(function(){ 
+		if (req.xhr) {
 
-	if (req.xhr) {
+			// uncomment the following line to simulate network latency for localhost testing
+			res.json(result);
 
-		// uncomment the following line to simulate network latency for localhost testing
-		//setTimeout(function(){ res.json(result); }, 3000);
-		res.json(result);
+		} else if(req.query.iframe){
 
-	} else if(req.query.iframe){
-
-		res.render('upload-iframe', {
-			layout: false,
-			locals:{ 
-				callback: req.query.iframe,
-				result: JSON.stringify(result)
-			}
-		});
-	}
-	else {
-		res.render('upload', { 
-			title: 'Uploader', 
-			file: imgFileName
-		});
-	}
+			res.render('upload-iframe', {
+				layout: false,
+				locals:{ 
+					callback: req.query.iframe,
+					result: JSON.stringify(result)
+				}
+			});
+		}
+		else {
+			res.render('upload', { 
+				title: 'JSSophia', 
+				file: imgFileName
+			});
+		}
+	}, 3000);
 };
 
 exports.thumb = function(req, res) {
@@ -79,6 +79,7 @@ exports.thumb = function(req, res) {
 	var dstPath = path.normalize( __dirname + '/../public/uploads/thumb-' + req.params.file );
 
 	path.exists(dstPath, function(exists) {
+
 
 		// thumbnail already exists
 	    if (exists) {
@@ -118,17 +119,20 @@ exports.remove = function(req, res, next) {
 		fs.unlink(dstPath);
 		// remove already existing thumbnail
 		fs.unlink(thumbPath);
+	
+		setTimeout(function(){ 
 
-		if (req.xhr) {
-			res.send({
-				file: file,
-				status: 'deleted'
-			});	
-		}
-		else {	
-			res.redirect('home');	
-		}
-		res.end();
+			if (req.xhr) {
+				res.send({
+					file: file,
+					status: 'deleted'
+				});	
+			}
+			else {	
+				res.redirect('home');	
+			}
+			res.end();
+		}, 2000);
 	}
 	else next();
 }
