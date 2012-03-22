@@ -1,6 +1,6 @@
 ## uploader-thumbnail Slides
 
-Thoses slides are intended to be used with [step-by-step-demo](https://github.com/dharFr/uploader-thumbnail/tree/step-by-step-demo) I presented in the 2nd [@JSSophia](http://twitter.com/jssophia) (2012 march 22)
+Thoses slides (in French) are intended to be used with [step-by-step-demo](https://github.com/dharFr/uploader-thumbnail/tree/step-by-step-demo) I presented in the 2nd [@JSSophia](http://twitter.com/jssophia) (2012 march 22)
 
 All the cool things in there (DZSlides engine, template, shells, etc.) comes from [paulrouget/dzslides](https://github.com/paulrouget/dzslides), which you should try because it's awesome.
 
